@@ -17,46 +17,62 @@ import {
 } from "../utils/formatters";
 import { UserContext } from "../components/context/context";
 
+function validateField(fieldName, value) {
+  switch (fieldName) {
+    case "name":
+      return nameValidator(value);
+    case "email":
+      return emailValidator(value);
+    case "password":
+      return passwordValidator(value);
+    case "checkPassword":
+      return checkPasswordValidator(value, formData.password);
+    default:
+      return null;
+  }
+}
+
 export default function Register() {
   const { user } = useContext(UserContext);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    checkPassword: "",
+    errors: {
+      name: null,
+      email: null,
+      password: null,
+      checkPassword: null,
+    },
+  });
 
   const [successRegister, setSuccessRegister] = useState(false);
-
   const [errorRegister, setErrorRegister] = useState(null);
   const [loadingRegister, setLoadingRegister] = useState(false);
-
-  const [name, setName] = useState("");
-  const [errorName, setErrorName] = useState(null);
-
-  const [email, setEmail] = useState("");
-  const [errorEmail, setErrorEmail] = useState(null);
-
-  const [password, setPassword] = useState("");
-  const [errorPassword, setErrorPassword] = useState(null);
-
-  const [checkPassword, setCheckPassword] = useState("");
-  const [errorCheckPassword, setErrorCheckPassword] = useState(null);
-
   const router = useRouter();
+
+  function handleChange(fieldName, value) {
+    const errors = { ...formData.errors };
+    const error = validateField(fieldName, value);
+    errors[fieldName] = error;
+    setFormData({
+      ...formData,
+      [fieldName]: value,
+      errors,
+    });
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setLoadingRegister(true);
 
-    const data = {
-      name: nameValidator(name, setErrorName),
-      email: emailValidator(email, setErrorEmail),
-      password: passwordValidator(password, setErrorPassword),
-      checkPassword: checkPasswordValidator(
-        checkPassword,
-        password,
-        setErrorCheckPassword
-      ),
-    };
-
-    if (Object.keys(data).every((entry) => !!data[entry])) {
+    if (
+      Object.values(formData.errors).every((error) => error === null) &&
+      Object.values(formData).every((value) => value !== "")
+    ) {
       try {
-        await api.post("/api/users/", data);
+        await api.post("/api/users/", formData);
 
         setErrorRegister(false);
         setSuccessRegister(true);
