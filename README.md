@@ -1,6 +1,11 @@
 # TP2_ES
 Trabalho Prático 2, Engenharia de Software II
 
+## Grupo
+- [Lourenço Monteiro]
+- [Thiago Pádua]
+
+## Descrição do Projeto e Tecnologias Utilizadas
 O sistema proposto é uma plataforma web dedicada à troca de figurinhas. Desenvolvido utilizando tecnologias Node.js no backend e React.js para o frontend, o projeto oferece uma série de funcionalidades essenciais para os usuários:
 
 - Autenticação de Usuários:
