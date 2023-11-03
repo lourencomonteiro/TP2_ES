@@ -6,14 +6,13 @@ import api from "../services/api";
 import Link from "next/link";
 
 export default function Exchange({ data, error }) {
-  const { user } = useContext(UserContext);
-
+  const { user: loggedInUser } = useContext(UserContext); // Renomeado para evitar conflito de nomes
   const router = useRouter();
 
   const [users, setUsers] = useState((data && data.users) || []);
   const [errorFetchUsers, setErrorFetchUsers] = useState(data ? null : error);
 
-  if (user) {
+  if (loggedInUser) {
     return (
       <div className="exchange">
         <div className="exchange__grid">
@@ -22,15 +21,15 @@ export default function Exchange({ data, error }) {
               Selecionar Usuário
             </div>
           </div>
-          {users.map((user, index) =>
-            user.nAvaliable > 0 ? (
+          {users.map((exchangeUser, index) =>
+            exchangeUser.nAvaliable > 0 ? (
               <Link
                 key={index}
                 href="/exchange/user/[id]"
-                as={`/exchange/user/${user.id}`}
+                as={`/exchange/user/${exchangeUser.id}`}
               >
                 <a className="exchange__userLink">
-                  <UserCard name={user.name} nAvaliable={user.nAvaliable} />
+                  <UserCard name={exchangeUser.name} nAvaliable={exchangeUser.nAvaliable} />
                 </a>
               </Link>
             ) : null
@@ -56,16 +55,16 @@ export async function getServerSideProps({ req }) {
       .then(({ data }) => data);
 
     const exchangePairs = await Promise.all(
-      users.map((user) =>
+      users.map((exchangeUser) =>
         api
-          .get(`/api/userStickers/exchange/${user.id}`, {
+          .get(`/api/userStickers/exchange/${exchangeUser.id}`, {
             withCredentials: true,
             headers: {
               Cookie: req.headers.cookie,
             },
           })
           .then(({ data }) => ({
-            ...user,
+            ...exchangeUser,
             ...data,
           }))
       )
