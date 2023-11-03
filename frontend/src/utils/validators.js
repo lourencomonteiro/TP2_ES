@@ -1,65 +1,65 @@
-export function notNullValidator(entry, setError) {
-  if (!entry) {
-    setError("Este campo é obrigatório!");
-  } else {
-    setError(null);
-    return entry;
+function validateField(value, rules, setError) {
+  for (const rule of rules) {
+    const { condition, message } = rule;
+    if (!condition(value)) {
+      setError(message);
+      return null;
+    }
   }
+  setError(null);
+  return value;
+}
+
+export function notNullValidator(entry, setError) {
+  return validateField(entry, [
+    {
+      condition: (value) => !!value,
+      message: "Este campo é obrigatório!",
+    },
+  ], setError);
 }
 
 export function usernameValidator(username, setError) {
-  if (!username) {
-    setError("Este campo é obrigatório!");
-  } else if (username.length < 4) {
-    setError("Nome de usuário deve ter no mínimo 4 caracteres!");
-  } else if (username.length > 16) {
-    setError("Nome de usuário deve ter no máximo 16 caracteres!");
-  } else {
-    setError(null);
-    return username;
-  }
+  return validateField(username, [
+    {
+      condition: (value) => value && value.length >= 4 && value.length <= 16,
+      message: "Nome de usuário deve ter entre 4 e 16 caracteres!",
+    },
+  ], setError);
 }
 
 export function passwordValidator(password, setError) {
-  if (!password) {
-    setError("Este campo é obrigatório!");
-  } else if (password.length < 8) {
-    setError("Senha deve ter no mínimo 8 caracteres!");
-  } else {
-    setError(null);
-    return password;
-  }
+  return validateField(password, [
+    {
+      condition: (value) => value && value.length >= 8,
+      message: "Senha deve ter no mínimo 8 caracteres!",
+    },
+  ], setError);
 }
 
 export function checkPasswordValidator(checkPassword, password, setError) {
-  if (!checkPassword) {
-    setError("Este campo é obrigatório!");
-  } else if (password !== checkPassword) {
-    setError("Senhas incompatíveis!");
-  } else {
-    setError(null);
-    return checkPassword;
-  }
+  return validateField(checkPassword, [
+    {
+      condition: (value) => value && value === password,
+      message: "Senhas incompatíveis!",
+    },
+  ], setError);
 }
 
 export function nameValidator(name, setError) {
-  if (!name) {
-    setError("Este campo é obrigatório!");
-  } else if (name.length > 100) {
-    setError("Nome deve ter no máximo 100 caracteres!");
-  } else {
-    setError(null);
-    return name;
-  }
+  return validateField(name, [
+    {
+      condition: (value) => value && value.length <= 100,
+      message: "Nome deve ter no máximo 100 caracteres!",
+    },
+  ], setError);
 }
 
 export function emailValidator(email, setError) {
-  if (!email) {
-    setError("Este campo é obrigatório!");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    setError("Email inválido!");
-  } else {
-    setError(null);
-    return email;
-  }
+  return validateField(email, [
+    {
+      condition: (value) => value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      message: "Email inválido!",
+    },
+  ], setError);
 }
