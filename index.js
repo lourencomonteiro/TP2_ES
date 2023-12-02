@@ -2,10 +2,10 @@
 require("dotenv").config();
 
 //Database sync
-require("./database/sync");
+require("./api/database/sync"); //"./database/sync"
 
 //APP
-const app = require("./config/express-config");
+const app = require("./api/config/express-config"); //"./config/express-config"
 
 app.listen(
   process.env.APP_PORT,

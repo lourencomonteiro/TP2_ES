@@ -7,7 +7,7 @@ export default function DefaultContainer({ children, loadingUser }) {
     <div className="container">
       <div className="container__grid container__grid--default">
         <div className="container__navbarBox container__navbarBox--logo">
-          <Link href="/">
+          <Link href="/" passHref legacyBehavior>
             <a className="uDontDecorate">
               <Logo size={"small"} />
             </a>
@@ -16,7 +16,7 @@ export default function DefaultContainer({ children, loadingUser }) {
         {!loadingUser ? (
           <>
             <div className="container__navbarBox container__navbarBox--about">
-              <Link href="/about">
+              <Link href="/about" passHref legacyBehavior>
                 <a className="textBtn textBtn--mobileActive">
                   <div className="textBtn__text">About</div>
                   <div className="textBtn__background"></div>
@@ -24,7 +24,7 @@ export default function DefaultContainer({ children, loadingUser }) {
               </Link>
             </div>
             <div className="container__navbarBox container__navbarBox--login">
-              <Link href="/login">
+              <Link href="/login" passHref legacyBehavior>
                 <a className="textBtn textBtn--mobileActive">
                   <div className="textBtn__text">Login</div>
                   <div className="textBtn__background"></div>
@@ -32,7 +32,7 @@ export default function DefaultContainer({ children, loadingUser }) {
               </Link>
             </div>
             <div className="container__navbarBox container__navbarBox--register">
-              <Link href="/register">
+              <Link href="/register" passHref legacyBehavior>
                 <a className="textBtn textBtn--mobileActive">
                   <div className="textBtn__text">Register</div>
                   <div className="textBtn__background"></div>

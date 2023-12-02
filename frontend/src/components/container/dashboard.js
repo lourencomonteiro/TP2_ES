@@ -27,7 +27,7 @@ export default function DashboardContainer({ children }) {
     <div className="container">
       <div className="container__grid container__grid--dashboard">
         <div className="container__navbarBox container__navbarBox--logo">
-          <Link href="/">
+          <Link href="/" passHref legacyBehavior>
             <a className="uDontDecorate">
               <Logo size={"small"} />
             </a>
@@ -44,7 +44,7 @@ export default function DashboardContainer({ children }) {
           <Popup popupIn={popupIn} setPopupIn={setPopupIn} />
         </div>
         <div className="container__navbarBox container__navbarBox--profile">
-          <Link href="/profile">
+          <Link href="/profile" passHref legacyBehavior>
             <a className="textBtn textBtn--mobileActive">
               <div className="textBtn__text">Perfil</div>
               <div className="textBtn__background"></div>

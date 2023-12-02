@@ -8,7 +8,7 @@ export default function DashboardPopup({ popupIn, setPopupIn }) {
     <CSSTransition in={popupIn} timeout={300} classNames="optionsPopup">
       <div className="optionsPopup">
         <div className="optionsPopup__optionBox">
-          <Link href="/collection">
+          <Link href="/collection" passHref legacyBehavior>
             <a
               onClick={() => setPopupIn(false)}
               className="textBtn textBtn--mobileActive textBtn--stretch"
@@ -22,7 +22,7 @@ export default function DashboardPopup({ popupIn, setPopupIn }) {
           </Link>
         </div>
         <div className="optionsPopup__optionBox">
-          <Link href="/exchange">
+          <Link href="/exchange" passHref legacyBehavior>
             <a
               onClick={() => setPopupIn(false)}
               className="textBtn textBtn--mobileActive textBtn--stretch"
@@ -36,7 +36,7 @@ export default function DashboardPopup({ popupIn, setPopupIn }) {
           </Link>
         </div>
         <div className="optionsPopup__optionBox">
-          <Link href="/notifications">
+          <Link href="/notifications" passHref legacyBehavior>
             <a
               onClick={() => setPopupIn(false)}
               className="textBtn textBtn--mobileActive textBtn--stretch"
