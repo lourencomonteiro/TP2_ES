@@ -1,146 +1,45 @@
-// UserServiceFactory.test.js
+const UserFactory = require("../entities/UserFactory");
+const InvalidParamError = require("../../../../errors/InvalidParamError");
 
-const UserServiceFactory = require("./UserServiceFactory");
+describe("UserEntity", () => {
+  describe("constructor", () => {
+    it("should create a user entity with valid parameters", () => {
+      const UserEntity = UserFactory({ InvalidParamError });
+      const user = new UserEntity({ email: "teste@gmail.com", name: "User 1", password: "senha12345" });
 
-describe("UserService", () => {
-  let UserService;
-  let UserModelMock;
-  let buildUserMock;
-  let NotAuthorizedErrorMock;
-  let PermissionErrorMock;
-  let QueryErrorMock;
-
-  beforeEach(() => {
-    UserModelMock = {
-      findOne: jest.fn(),
-      findAll: jest.fn(),
-      findByPk: jest.fn(),
-      create: jest.fn(),
-    };
-    buildUserMock = jest.fn();
-    NotAuthorizedErrorMock = jest.fn();
-    PermissionErrorMock = jest.fn();
-    QueryErrorMock = jest.fn();
-
-    UserService = UserServiceFactory({
-      UserModel: UserModelMock,
-      buildUser: buildUserMock,
-      NotAuthorizedError: NotAuthorizedErrorMock,
-      PermissionError: PermissionErrorMock,
-      QueryError: QueryErrorMock,
-    });
-  });
-
-  describe("create", () => {
-    test("should create a new user if email is not already taken", async () => {
-      UserModelMock.findOne.mockResolvedValue(null);
-
-      const body = { name: "John Doe", email: "john@example.com", password: "password" };
-      await UserService.create(body);
-
-      expect(buildUserMock).toHaveBeenCalledWith(body);
-      expect(UserModelMock.create).toHaveBeenCalledWith(buildUserMock());
+      expect(user.email).toBe("teste@gmail.com");
+      expect(user.name).toBe("User 1");
+      expect(user.password).toBe("senha12345");
     });
 
-    test("should throw QueryError if email is already taken", async () => {
-      UserModelMock.findOne.mockResolvedValue({});
+    it("should throw InvalidParamError for missing name", () => {
+      const UserEntity = UserFactory({ InvalidParamError });
 
-      const body = { name: "John Doe", email: "john@example.com", password: "password" };
-      await expect(UserService.create(body)).rejects.toThrow("E-mail já cadastrado!");
-    });
-  });
-
-  describe("getAll", () => {
-    test("should return all users except the specified userId", async () => {
-      const userId = 1;
-      const mockUsers = [{ id: 2, name: "User2", email: "user2@example.com" }];
-      UserModelMock.findAll.mockResolvedValue(mockUsers);
-
-      const result = await UserService.getAll(userId);
-
-      expect(UserModelMock.findAll).toHaveBeenCalledWith({
-        attributes: ["id", "name", "email"],
-        where: {
-          id: {
-            [Op.not]: userId,
-          },
-        },
-      });
-      expect(result).toEqual(mockUsers);
+      expect(() => new UserEntity({ email: "teste@gmail.com", password: "senha12345" })).toThrow(InvalidParamError);
     });
 
-    test("should throw QueryError if no users are returned", async () => {
-      UserModelMock.findAll.mockResolvedValue([]);
+    it("should throw InvalidParamError for missing email", () => {
+      const UserEntity = UserFactory({ InvalidParamError });
 
-      const userId = 1;
-      await expect(UserService.getAll(userId)).rejects.toThrow("Nenhum usuário retornado!");
-    });
-  });
-
-  describe("getById", () => {
-    test("should return user by ID", async () => {
-      const mockUser = { id: 1, name: "John Doe", email: "john@example.com" };
-      UserModelMock.findByPk.mockResolvedValue(mockUser);
-
-      const result = await UserService.getById(1);
-
-      expect(UserModelMock.findByPk).toHaveBeenCalledWith(1, {
-        attributes: { exclude: ["password", "createdAt", "updatedAt"] },
-      });
-      expect(result).toEqual(mockUser);
+      expect(() => new UserEntity({ name: "User 1", password: "senha12345" })).toThrow(InvalidParamError);
     });
 
-    test("should throw QueryError if user with the specified ID is not found", async () => {
-      UserModelMock.findByPk.mockResolvedValue(null);
+    it("should throw InvalidParamError for missing password", () => {
+      const UserEntity = UserFactory({ InvalidParamError });
 
-      await expect(UserService.getById(1)).rejects.toThrow("Não há um usuário com o ID 1!");
-    });
-  });
-
-  describe("update", () => {
-    // Add tests for update method
-    test("should update user by ID if the logged user has permission", async () => {
-      const mockUser = { id: 1, name: "John Doe", email: "john@example.com" };
-      UserModelMock.findByPk.mockResolvedValue(mockUser);
-
-      const body = { name: "Updated Name" };
-      const loggedUser = { id: 1 };
-      await UserService.update(1, body, loggedUser);
-
-      expect(UserModelMock.findByPk).toHaveBeenCalledWith(1);
-      expect(mockUser.update).toHaveBeenCalledWith(body);
+      expect(() => new UserEntity({ email: "teste@gmail.com", name: "User 1" })).toThrow(InvalidParamError);
     });
 
-    test("should throw NotAuthorizedError if logged user does not have permission", async () => {
-      const mockUser = { id: 2, name: "User2", email: "user2@example.com" };
-      UserModelMock.findByPk.mockResolvedValue(mockUser);
+    it("should throw InvalidParamError for password length under 8 characters", () => {
+      const UserEntity = UserFactory({ InvalidParamError });
 
-      const body = { name: "Updated Name" };
-      const loggedUser = { id: 1 };
-      await expect(UserService.update(2, body, loggedUser)).rejects.toThrow(
-        "Você não tem permissão para editar outro usuário!"
-      );
-    });
-  });
-
-  describe("delete", () => {
-    // Add tests for delete method
-    test("should delete user by ID if the logged user has permission", async () => {
-      const mockUser = { id: 2, name: "User2", email: "user2@example.com" };
-      UserModelMock.findByPk.mockResolvedValue(mockUser);
-
-      const idReqUser = 1;
-      await UserService.delete(2, idReqUser);
-
-      expect(UserModelMock.findByPk).toHaveBeenCalledWith(2);
-      expect(mockUser.destroy).toHaveBeenCalled();
+      expect(() => new UserEntity({ email: "teste@gmail.com", name: "User 1", password: "123" })).toThrow(InvalidParamError);
     });
 
-    test("should throw PermissionError if trying to delete own user", async () => {
-      const idReqUser = 1;
-      await expect(UserService.delete(idReqUser, idReqUser)).rejects.toThrow(
-        "Não é possível deletar o próprio usuário!"
-      );
+    it("should throw InvalidParamError for typeof password is not string", () => {
+      const UserEntity = UserFactory({ InvalidParamError });
+
+      expect(() => new UserEntity({ email: "teste@gmail.com", name: "User 1", password: 123456789 })).toThrow(InvalidParamError);
     });
   });
 });
