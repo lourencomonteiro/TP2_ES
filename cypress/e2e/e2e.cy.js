@@ -2,7 +2,7 @@
 
 describe("E2E tests", () => {
 
-  it("should be in login url", () => {
+  it("should be in main url", () => {
     cy.visit("http://localhost:3000/");
     cy.wait(2000);
     cy.clearAllCookies();
@@ -16,14 +16,14 @@ describe("E2E tests", () => {
     cy.url().should("eq", "http://localhost:3000/login");
   });
 
-  it("should be in login url", () => {
+  it("should be in register url", () => {
     cy.visit("http://localhost:3000/register");
     cy.wait(2000);
     cy.clearAllCookies();
     cy.url().should("eq", "http://localhost:3000/register");
   });
 
-  it("should be in login url", () => {
+  it("should raise 404 error", () => {
     cy.visit("http://localhost:3000/about", { failOnStatusCode: false });
     cy.wait(2000);
     cy.clearAllCookies();
